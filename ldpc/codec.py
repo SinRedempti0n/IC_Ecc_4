@@ -174,7 +174,6 @@ def decode(H, y, snr, maxiter=1000):
 
 
 def _bitsandnodes(H):
-    """Return bits and nodes of a parity-check matrix H."""
     if type(H) != scipy.sparse.csr_matrix:
         bits_indices, bits = np.where(H)
         nodes_indices, nodes = np.where(H.T)
@@ -188,7 +187,6 @@ def _bitsandnodes(H):
 
 
 def incode(H, x):
-    """Compute Binary Product of H and x."""
     return (binaryproduct(H, x) == 0).all()
 
 
