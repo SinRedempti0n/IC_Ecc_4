@@ -3,6 +3,48 @@ import numpy as np
 import sys
 import matplotlib.pyplot as plt
 
+import ldpc.ldpc as ldpc
+import ldpc.codec as codec
+
+from time import time
+
+def ldcpTransmition(frame):
+    n = 200
+    d_v = 3
+    d_c = 4
+    seed = 42
+    H, G = ldpc.make_ldpc(n, d_v, d_c)
+
+    snr = 8
+
+    framesBin = codec.rgb2bin(frame)
+    print("Frame shape: (%s, %s, %s)" % framesBin.shape)
+    print("Frame Binary shape: (%s, %s, %s)" % framesBin.shape)
+
+    framesBin_coded, frame_noisy = codec.encode_img(G, framesBin, snr)
+
+    print("Coded Frame shape", framesBin_coded.shape)
+
+    t = time()
+    frame_decoded = codec.decode_img(G, H, framesBin_coded, snr, framesBin.shape)
+    t = time() - t
+    print("Tiger | Decoding time: ", t)
+
+    error_decoded_tiger = abs(frame - frame_decoded).mean()
+    error_noisy_tiger = abs(frame_noisy - frame).mean()
+
+    plt.figure()
+    plt.imshow(frame)
+    plt.title('Original')
+    plt.figure()
+    plt.imshow(frame_noisy)
+    plt.title('Noizy = %f' % error_noisy_tiger)
+    plt.figure()
+    plt.imshow(frame_decoded)
+    plt.title('Decoded = %f' % error_decoded_tiger)
+    plt.show()
+
+
 def readFrames(videoName):
     container = av.open("%s" % videoName)
     framesIn = []
@@ -24,6 +66,7 @@ if __name__ == "__main__":
     frames = readFrames(sys.argv[1])
     YCbRc = getYCbCr(frames[0])
     Quant = (YCbRc // 2) + 128
-    plt.imshow(Quant[:, :, 0], cmap='Greys')
+    ldcpTransmition(frames[0])
+    #plt.imshow(Quant[:, :, 0], cmap='Greys')
+    #print('TODO')
     plt.show()
-    print('TODO')
