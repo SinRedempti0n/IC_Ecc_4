@@ -19,17 +19,14 @@ def dctDecoder(encode):
         for i in range(encode['width']):
             for j in range(encode['height']):
                 #
-                encodePiece = np.zeros((cellSize,cellSize), np.int8)
-                for i1 in range(cellSize):
-                    for j1 in range(cellSize):
-                        encodePiece[i1,j1] = encode['data'][iterator]
-                        iterator +=1
-                dataPiece = scipy.fftpack.idct(scipy.fftpack.idct(encodePiece.T, norm='ortho').T, norm='ortho').T
+                encodePiece = encode['data'][iterator:iterator + cellSize*cellSize].reshape(cellSize,cellSize)
+                iterator += cellSize*cellSize
+                dataPiece = scipy.fftpack.idct(scipy.fftpack.idct(encodePiece.T,
+                                                                norm='ortho').T,
+                                                norm='ortho')
                 dataPiece = dataPiece.clip(0, 255)
                 dataPiece = dataPiece.astype("uint8")
-                for i1 in range(cellSize):
-                    for j1 in range(cellSize):
-                        frame[j*cellSize+j1, i*cellSize+i1, col] = dataPiece[j1, i1]
+                frame[j*cellSize:(j+1)*cellSize, i*cellSize:(i+1)*cellSize, col] = dataPiece
     #frame = frame.clip(0, 255)
     #frame = frame.astype("uint8")
     return frame

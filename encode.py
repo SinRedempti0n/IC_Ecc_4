@@ -16,17 +16,18 @@ def dctEncoder(frame):
     height = math.ceil(frame.shape[0]/cellSize);
     width = math.ceil(frame.shape[1]/cellSize);
     encodeSize = height*width*cellSize*cellSize*defs.colors
-    encode = {'width':width, 'height':height, 'data':np.zeros((encodeSize),np.float32)}
-    iterator = 0;
+    encode = {'width':width, 'height':height, 'data':np.zeros((encodeSize), np.float32)}
+    iterator = 0
     for col in range(defs.colors):
         for i in range(width):
             for j in range(height):
                 #
-                dataPiece = frame[j*cellSize:(j+1)*cellSize,i*cellSize:(i+1)*cellSize,col]
-                encodePiece = scipy.fftpack.dct(scipy.fftpack.dct(dataPiece.T, norm="ortho").T, norm="ortho")
-                for i1 in range(cellSize):
-                    for j1 in range(cellSize):
-                        tmp = (encodePiece[j1,i1])
-                        encode['data'][iterator] = tmp
-                        iterator +=1
+                dataPiece = frame[j*cellSize:(j+1)*cellSize,
+                                  i*cellSize:(i+1)*cellSize, col]
+                encodePiece = scipy.fftpack.dct(scipy.fftpack.dct(dataPiece.T,
+                                                                norm="ortho").T,
+                                                norm="ortho")
+                encode['data'][iterator:iterator + cellSize*cellSize] = encodePiece.flatten()
+                iterator+= cellSize*cellSize
     return encode
+
