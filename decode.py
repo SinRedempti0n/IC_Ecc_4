@@ -13,13 +13,15 @@ cellSize = defs.cellSize;
 #на входе структура с изначальными размерами и огромной байтовой простыней.
 #на выходе массив
 def dctDecoder(encode):
-    frame =np.zeros((encode['height']*cellSize, encode['width']*cellSize, 3), np.uint8)
-    iterator = 0
+    height = encode[0].astype("uint8")
+    width = encode[1].astype("uint8")
+    frame =np.zeros((height*cellSize, width*cellSize, 3), np.uint8)
+    iterator = 2
     for col in range(defs.colors):
-        for i in range(encode['width']):
-            for j in range(encode['height']):
+        for i in range(width):
+            for j in range(height):
                 #
-                encodePiece = encode['data'][iterator:iterator + cellSize*cellSize].reshape(cellSize,cellSize)
+                encodePiece = encode[iterator:iterator + cellSize*cellSize].reshape(cellSize,cellSize)
                 iterator += cellSize*cellSize
                 dataPiece = scipy.fftpack.idct(scipy.fftpack.idct(encodePiece.T,
                                                                 norm='ortho').T,
